@@ -76,7 +76,9 @@ Install all extras with `uv sync --locked --all-extras`, open `HousePriceData.ip
 
 ## Data and intended use
 
-The included data is the Ames Housing dataset. Confirm the dataset's source, license, and redistribution terms before redistributing this repository. The current model is trained and evaluated only on this dataset and should not be assumed to generalize to other locations, time periods, or populations. Do not use it as the sole basis for lending, purchase, sale, or property-appraisal decisions.
+This is an educational/demo project for Ames-like records, not a property valuation product. It has not been validated for other locations, populations, or future market conditions and must not be used to make or support real property appraisal, lending, purchase, or sale decisions.
+
+The project owner reports that `train.csv` came from Kaggle, but the exact Kaggle listing, dataset version, attribution requirements, and redistribution terms have not been verified. The CSV remains in the repository for now; that is not confirmation that redistribution is permitted. Verify the source terms before publishing or redistributing the dataset. See the [project and data contract](docs/project-contract.md) for the input/output contract and initial evaluation gate.
 
 ## Next steps
 

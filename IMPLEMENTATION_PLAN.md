@@ -82,19 +82,27 @@ Keep the module split smaller if the implementation remains cohesive. Make paths
 
 ### Phase 0 — Define the product contract and data rights
 
+**Decisions recorded** — The first release is a local package/CLI for offline
+training, evaluation, and batch prediction, aimed at educational/demo use only.
+The prediction contract, use limitations, and initial model-selection gate
+are recorded in [docs/project-contract.md](docs/project-contract.md). The
+project owner reports Kaggle as the data source, but the exact listing and
+redistribution terms are unverified. The CSV is being kept in the repository
+pending verification; this does not establish permission to redistribute it.
+
 **Tasks**
 
-- State the target user and supported workflow: offline training and batch prediction for Ames-like records.
-- Define prediction-time inputs separately from training data: `SalePrice` is the label and must not be accepted as an inference feature; `Id` is an identifier, not a predictor.
-- Confirm the dataset source, redistribution terms, attribution requirements, and whether the checked-in CSV may remain in the repository.
-- Document supported population, currency/units, intended use, prohibited use, and known limitations.
-- Agree that the initial delivery is a CLI/package, with an API/UI/cloud deployment deferred unless there is a concrete consumer.
+- [x] State the target user and supported workflow: educational/demo use, with offline training and batch prediction for Ames-like records.
+- [x] Define prediction-time inputs separately from training data: `SalePrice` is the label and must be rejected at inference; `Id` is optional metadata, not a predictor.
+- [ ] Confirm the exact dataset source, redistribution terms, attribution requirements, and whether the checked-in CSV may remain in the repository. Kaggle is reported as the source, but the exact listing and terms are unverified.
+- [x] Document supported population, price-unit caveat, intended use, prohibited use, and known limitations.
+- [x] Agree that the initial delivery is a CLI/package, with an API/UI/cloud deployment deferred unless there is a concrete consumer.
 
 **Exit criteria**
 
-- Data provenance/licensing and intended-use notes are recorded.
-- Input/output contract and scope are agreed, including which fields may be missing at prediction time.
-- Evaluation metric definitions and initial release gate are documented before model selection.
+- [ ] Exact data provenance/licensing and intended-use notes are recorded. Intended-use notes are complete; exact source and redistribution terms remain open.
+- [x] Input/output contract and scope are agreed, including rejection of missing required prediction features.
+- [x] Evaluation metric definitions and initial release gate are documented before model selection.
 
 ### Phase 1 — Make the repository reproducible
 
@@ -247,9 +255,8 @@ Keep the module split smaller if the implementation remains cohesive. Make paths
 
 ## 7. Immediate next actions
 
-1. Confirm data provenance/redistribution rights and whether this is an offline portfolio project or a service for a real consumer.
-2. Define the initial CLI scope and supported inference input contract.
-3. Create the package scaffold, dependency lock, and local commands; remove the Colab-only data path.
-4. Implement schema validation and the end-to-end preprocessing/model pipeline.
-5. Re-run baseline and candidate comparisons with an untouched holdout and cross-validation; replace README metrics only with verified results.
-6. Add tests/CI, complete documentation, and then decide whether online serving is actually required.
+1. Verify the exact Kaggle listing, dataset version, attribution, and redistribution terms; update the contract before redistributing the CSV.
+2. Implement the Phase 0 prediction input contract during Phase 2, including explicit rejection of `SalePrice` and invalid required feature values.
+3. Implement schema validation and the end-to-end preprocessing/model pipeline.
+4. Re-run baseline and candidate comparisons with cross-validation and an untouched holdout; update reported metrics only with verified results.
+5. Add tests/CI, complete documentation, and revisit online serving only if a concrete consumer is identified.
