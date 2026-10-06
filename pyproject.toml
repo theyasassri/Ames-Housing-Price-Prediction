@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling>=1.26,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ames-house-prices"
+version = "0.1.0"
+description = "Reproducible Ames Housing price modeling project"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "joblib>=1.4,<2",
+    "pandas>=2.2,<4",
+    "scikit-learn>=1.5,<2",
+]
+
+[project.optional-dependencies]
+notebook = [
+    "ipykernel>=6.29,<8",
+    "matplotlib>=3.8,<4",
+    "seaborn>=0.13,<1",
+]
+dev = [
+    "pytest>=8,<10",
+    "ruff>=0.9,<1",
+]
+
+[project.scripts]
+ames-housing = "ames_house_prices.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ames_house_prices"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

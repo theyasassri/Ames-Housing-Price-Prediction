@@ -1,0 +1,24 @@
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Local model outputs and run products
+artifacts/
+*.joblib
+predictions.csv
+data/local/
+data/processed/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
