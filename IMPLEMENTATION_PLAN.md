@@ -85,22 +85,21 @@ Keep the module split smaller if the implementation remains cohesive. Make paths
 **Decisions recorded** — The first release is a local package/CLI for offline
 training, evaluation, and batch prediction, aimed at educational/demo use only.
 The prediction contract, use limitations, and initial model-selection gate
-are recorded in [docs/project-contract.md](docs/project-contract.md). The
-project owner reports Kaggle as the data source, but the exact listing and
-redistribution terms are unverified. The CSV is being kept in the repository
-pending verification; this does not establish permission to redistribute it.
+are recorded in [docs/project-contract.md](docs/project-contract.md). Dataset
+provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
+"House Prices - Advanced Regression Techniques" competition under the MIT License.
 
 **Tasks**
 
 - [x] State the target user and supported workflow: educational/demo use, with offline training and batch prediction for Ames-like records.
 - [x] Define prediction-time inputs separately from training data: `SalePrice` is the label and must be rejected at inference; `Id` is optional metadata, not a predictor.
-- [ ] Confirm the exact dataset source, redistribution terms, attribution requirements, and whether the checked-in CSV may remain in the repository. Kaggle is reported as the source, but the exact listing and terms are unverified.
+- [x] Confirm the exact dataset source, redistribution terms, attribution requirements, and whether the checked-in CSV may remain in the repository (Dean De Cock / Kaggle MIT license documented in docs/project-contract.md).
 - [x] Document supported population, price-unit caveat, intended use, prohibited use, and known limitations.
 - [x] Agree that the initial delivery is a CLI/package, with an API/UI/cloud deployment deferred unless there is a concrete consumer.
 
 **Exit criteria**
 
-- [ ] Exact data provenance/licensing and intended-use notes are recorded. Intended-use notes are complete; exact source and redistribution terms remain open.
+- [x] Exact data provenance/licensing and intended-use notes are recorded.
 - [x] Input/output contract and scope are agreed, including rejection of missing required prediction features.
 - [x] Evaluation metric definitions and initial release gate are documented before model selection.
 
