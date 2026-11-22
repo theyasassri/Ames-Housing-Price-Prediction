@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from ames_house_prices.analysis import run_error_analysis
 from ames_house_prices.config import (
     DEFAULT_CV_SPLITS,
     DEFAULT_DATA_PATH,
@@ -98,6 +99,18 @@ def _parser() -> argparse.ArgumentParser:
     benchmark_cmd.add_argument("--random-state", type=int, default=DEFAULT_RANDOM_STATE)
     benchmark_cmd.add_argument("--test-size", type=float, default=DEFAULT_TEST_SIZE)
 
+    analyze_cmd = commands.add_parser("analyze-errors", help="Run residual analysis and slice metrics.")
+    analyze_cmd.add_argument("--data", type=Path, default=DEFAULT_DATA_PATH)
+    analyze_cmd.add_argument(
+        "--model-name",
+        type=str,
+        default="gradient_boosting",
+        choices=SUPPORTED_MODELS,
+        help="Model architecture to analyze.",
+    )
+    analyze_cmd.add_argument("--random-state", type=int, default=DEFAULT_RANDOM_STATE)
+    analyze_cmd.add_argument("--test-size", type=float, default=DEFAULT_TEST_SIZE)
+
     audit_cmd = commands.add_parser("audit", help="Audit dataset schema, missingness, and statistics.")
     audit_cmd.add_argument("--data", type=Path, default=DEFAULT_DATA_PATH)
 
@@ -147,6 +160,17 @@ def main() -> None:
             holdout_rmse_str = f"${b.holdout_metrics.rmse:,.2f}"
             holdout_r2_str = f"{b.holdout_metrics.r2:.4f}"
             print(f"{b.model_name:<20} | {cv_mae_str:<24} | {holdout_mae_str:<14} | {holdout_rmse_str:<14} | {holdout_r2_str:<10}")
+        return
+
+    if args.command == "analyze-errors":
+        data = load_training_data(args.data)
+        report = run_error_analysis(
+            data,
+            model_name=args.model_name,
+            random_state=args.random_state,
+            test_size=args.test_size,
+        )
+        print(report.summary_table())
         return
 
     if args.command == "train":

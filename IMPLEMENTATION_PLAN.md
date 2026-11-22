@@ -163,18 +163,18 @@ provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
 
 **Tasks**
 
-- Plot and tabulate actual-vs-predicted values, residual distribution, residuals vs. prediction, and calibration by price range.
-- Measure performance slices by sale year, neighborhood, quality band, and price quantile when sample sizes are adequate; identify small-sample caveats.
-- Investigate under/over-prediction for high-value homes and determine whether it is systematic, data-driven, or caused by the small feature set.
-- Inspect high-leverage outliers; define a documented policy for retaining, excluding, or separately flagging observations. Do not drop rows solely because a chart looks unusual.
-- Review features such as neighborhood for sensitive/proxy implications and restrict use to a clearly documented decision-support context.
-- Add acceptance thresholds for overall and key-slice performance only after baseline results and intended use are agreed. Thresholds must be testable and justified.
+- [x] Plot and tabulate actual-vs-predicted values, residual distribution, residuals vs. prediction, and calibration by price range.
+- [x] Measure performance slices by sale year, neighborhood, quality band, and price quantile when sample sizes are adequate; identify small-sample caveats.
+- [x] Investigate under/over-prediction for high-value homes and determine whether it is systematic, data-driven, or caused by the small feature set.
+- [x] Inspect high-leverage outliers; define a documented policy for retaining, excluding, or separately flagging observations. Do not drop rows solely because a chart looks unusual.
+- [x] Review features such as neighborhood for sensitive/proxy implications and restrict use to a clearly documented decision-support context.
+- [x] Add acceptance thresholds for overall and key-slice performance only after baseline results and intended use are agreed. Thresholds must be testable and justified.
 
 **Exit criteria**
 
-- Evaluation includes slice-level metrics and a concise error-analysis report.
-- Any exclusion or special handling of training examples has documented, reproducible criteria.
-- A model card records intended use, limitations, validation population, and residual risks.
+- [x] Evaluation includes slice-level metrics and a concise error-analysis report.
+- [x] Any exclusion or special handling of training examples has documented, reproducible criteria.
+- [x] A model card records intended use, limitations, validation population, and residual risks.
 
 ### Phase 5 — Package model training and batch inference
 
