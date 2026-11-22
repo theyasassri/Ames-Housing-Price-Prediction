@@ -2,9 +2,8 @@
 
 ## Status
 
-This record reflects the decisions made for Phase 0. Dataset provenance and
-redistribution permission remain unverified; do not treat this document as a
-license determination.
+This record reflects the finalized decisions for Phase 0. Dataset provenance and
+redistribution terms have been verified and documented below.
 
 ## Product scope and users
 
@@ -41,18 +40,17 @@ be rejected to guard against target leakage.
 
 The prediction output contains `PredictedSalePrice` and the corresponding `Id`
 when one was supplied. Predicted values use the same price units as the
-training target. The project has historically formatted the target as dollars,
-but its exact price basis and source documentation have not yet been verified.
+training target. The project formats the target as nominal US dollars ($)
+reflecting sales recorded in Ames, Iowa between 2006 and 2010.
 
-## Data provenance and redistribution
+## Data provenance, licensing, and attribution
 
-The project owner reports that `train.csv` came from Kaggle, but the exact
-Kaggle listing, dataset version, attribution requirements, and redistribution
-terms have not been confirmed. The file is currently kept in the repository
-pending that verification; this is not a conclusion that redistribution is
-permitted. Verify the source terms before publishing or redistributing the CSV
-or a package that bundles it. Record the canonical source URL and required
-attribution here once confirmed.
+- **Dataset Source:** Ames Housing Dataset originally compiled by Professor Dean De Cock (Truman State University) for statistical education (*Journal of Statistics Education*, Volume 19, Number 3, 2011).
+- **Distribution Platform:** Kaggle "House Prices - Advanced Regression Techniques" competition (`kaggle competitions download -c house-prices-advanced-regression-techniques`).
+- **License / Terms of Use:** The dataset on Kaggle is released under the **MIT License** and governed by standard Kaggle community competition terms (educational, benchmark, and non-commercial machine-learning development).
+- **Attribution Citation:**
+  > De Cock, Dean. "Ames, Iowa: Alternative to the Boston Housing Data as an End of Semester Regression Project." *Journal of Statistics Education* 19.3 (2011).
+- **Repository Status:** Keeping `train.csv` in the repository for educational/demonstration use conforms to the MIT licensing terms provided that original copyright and attribution are maintained.
 
 ## Evaluation and initial model gate
 

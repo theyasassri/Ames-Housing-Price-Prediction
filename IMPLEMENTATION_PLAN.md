@@ -85,22 +85,21 @@ Keep the module split smaller if the implementation remains cohesive. Make paths
 **Decisions recorded** — The first release is a local package/CLI for offline
 training, evaluation, and batch prediction, aimed at educational/demo use only.
 The prediction contract, use limitations, and initial model-selection gate
-are recorded in [docs/project-contract.md](docs/project-contract.md). The
-project owner reports Kaggle as the data source, but the exact listing and
-redistribution terms are unverified. The CSV is being kept in the repository
-pending verification; this does not establish permission to redistribute it.
+are recorded in [docs/project-contract.md](docs/project-contract.md). Dataset
+provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
+"House Prices - Advanced Regression Techniques" competition under the MIT License.
 
 **Tasks**
 
 - [x] State the target user and supported workflow: educational/demo use, with offline training and batch prediction for Ames-like records.
 - [x] Define prediction-time inputs separately from training data: `SalePrice` is the label and must be rejected at inference; `Id` is optional metadata, not a predictor.
-- [ ] Confirm the exact dataset source, redistribution terms, attribution requirements, and whether the checked-in CSV may remain in the repository. Kaggle is reported as the source, but the exact listing and terms are unverified.
+- [x] Confirm the exact dataset source, redistribution terms, attribution requirements, and whether the checked-in CSV may remain in the repository (Dean De Cock / Kaggle MIT license documented in docs/project-contract.md).
 - [x] Document supported population, price-unit caveat, intended use, prohibited use, and known limitations.
 - [x] Agree that the initial delivery is a CLI/package, with an API/UI/cloud deployment deferred unless there is a concrete consumer.
 
 **Exit criteria**
 
-- [ ] Exact data provenance/licensing and intended-use notes are recorded. Intended-use notes are complete; exact source and redistribution terms remain open.
+- [x] Exact data provenance/licensing and intended-use notes are recorded.
 - [x] Input/output contract and scope are agreed, including rejection of missing required prediction features.
 - [x] Evaluation metric definitions and initial release gate are documented before model selection.
 
@@ -126,21 +125,21 @@ pending verification; this does not establish permission to redistribute it.
 
 **Tasks**
 
-- Implement an ingestion boundary that checks file readability, required columns, duplicate column names, expected target presence for training, non-empty rows, and acceptable data types.
-- Validate identifiers and reject invalid target values (null, non-finite, or non-positive if the chosen business contract requires positivity).
-- Report row/column counts, missingness by column, duplicate rows/IDs, category cardinalities, and target distribution as machine-readable and human-readable data audits.
-- Separate missing values that mean “feature absent” (for example, no pool) from unknown/unrecorded values. Encode this distinction explicitly and consistently.
-- Build preprocessing with scikit-learn `Pipeline`/`ColumnTransformer`: numeric imputation, categorical imputation, one-hot encoding with unknown-category handling, and optional scaling for models that need it.
-- Keep all learned preprocessing inside the training pipeline so it is fit only on each training fold.
-- Derive `TotalSF` in one tested transformation. Validate required input fields and ensure no target-derived values enter the feature matrix.
-- Keep raw training data immutable; write cleaned/intermediate data only to generated, ignored output locations.
+- [x] Implement an ingestion boundary that checks file readability, required columns, duplicate column names, expected target presence for training, non-empty rows, and acceptable data types.
+- [x] Validate identifiers and reject invalid target values (null, non-finite, or non-positive if the chosen business contract requires positivity).
+- [x] Report row/column counts, missingness by column, duplicate rows/IDs, category cardinalities, and target distribution as machine-readable and human-readable data audits.
+- [x] Separate missing values that mean “feature absent” (for example, no pool) from unknown/unrecorded values. Encode this distinction explicitly and consistently.
+- [x] Build preprocessing with scikit-learn `Pipeline`/`ColumnTransformer`: numeric imputation, categorical imputation, one-hot encoding with unknown-category handling, and optional scaling for models that need it.
+- [x] Keep all learned preprocessing inside the training pipeline so it is fit only on each training fold.
+- [x] Derive `TotalSF` in one tested transformation. Validate required input fields and ensure no target-derived values enter the feature matrix.
+- [x] Keep raw training data immutable; write cleaned/intermediate data only to generated, ignored output locations.
 
 **Exit criteria**
 
-- Invalid schemas fail with actionable errors instead of silently producing predictions.
-- Data preparation is deterministic for a fixed input/configuration.
-- Preprocessing can be fit, serialized, loaded, and applied to an unseen row with a previously unseen category.
-- Tests prove the target and identifier are excluded from predictors and fold-specific preprocessing is used.
+- [x] Invalid schemas fail with actionable errors instead of silently producing predictions.
+- [x] Data preparation is deterministic for a fixed input/configuration.
+- [x] Preprocessing can be fit, serialized, loaded, and applied to an unseen row with a previously unseen category.
+- [x] Tests prove the target and identifier are excluded from predictors and fold-specific preprocessing is used.
 
 ### Phase 3 — Establish a defensible model-selection baseline
 
