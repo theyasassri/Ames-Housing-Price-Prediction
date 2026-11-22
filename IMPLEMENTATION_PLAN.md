@@ -125,21 +125,21 @@ provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
 
 **Tasks**
 
-- [x] Implement an ingestion boundary that checks file readability, required columns, duplicate column names, expected target presence for training, non-empty rows, and acceptable data types.
-- [x] Validate identifiers and reject invalid target values (null, non-finite, or non-positive if the chosen business contract requires positivity).
-- [x] Report row/column counts, missingness by column, duplicate rows/IDs, category cardinalities, and target distribution as machine-readable and human-readable data audits.
-- [x] Separate missing values that mean “feature absent” (for example, no pool) from unknown/unrecorded values. Encode this distinction explicitly and consistently.
-- [x] Build preprocessing with scikit-learn `Pipeline`/`ColumnTransformer`: numeric imputation, categorical imputation, one-hot encoding with unknown-category handling, and optional scaling for models that need it.
-- [x] Keep all learned preprocessing inside the training pipeline so it is fit only on each training fold.
-- [x] Derive `TotalSF` in one tested transformation. Validate required input fields and ensure no target-derived values enter the feature matrix.
-- [x] Keep raw training data immutable; write cleaned/intermediate data only to generated, ignored output locations.
+- Implement an ingestion boundary that checks file readability, required columns, duplicate column names, expected target presence for training, non-empty rows, and acceptable data types.
+- Validate identifiers and reject invalid target values (null, non-finite, or non-positive if the chosen business contract requires positivity).
+- Report row/column counts, missingness by column, duplicate rows/IDs, category cardinalities, and target distribution as machine-readable and human-readable data audits.
+- Separate missing values that mean “feature absent” (for example, no pool) from unknown/unrecorded values. Encode this distinction explicitly and consistently.
+- Build preprocessing with scikit-learn `Pipeline`/`ColumnTransformer`: numeric imputation, categorical imputation, one-hot encoding with unknown-category handling, and optional scaling for models that need it.
+- Keep all learned preprocessing inside the training pipeline so it is fit only on each training fold.
+- Derive `TotalSF` in one tested transformation. Validate required input fields and ensure no target-derived values enter the feature matrix.
+- Keep raw training data immutable; write cleaned/intermediate data only to generated, ignored output locations.
 
 **Exit criteria**
 
-- [x] Invalid schemas fail with actionable errors instead of silently producing predictions.
-- [x] Data preparation is deterministic for a fixed input/configuration.
-- [x] Preprocessing can be fit, serialized, loaded, and applied to an unseen row with a previously unseen category.
-- [x] Tests prove the target and identifier are excluded from predictors and fold-specific preprocessing is used.
+- Invalid schemas fail with actionable errors instead of silently producing predictions.
+- Data preparation is deterministic for a fixed input/configuration.
+- Preprocessing can be fit, serialized, loaded, and applied to an unseen row with a previously unseen category.
+- Tests prove the target and identifier are excluded from predictors and fold-specific preprocessing is used.
 
 ### Phase 3 — Establish a defensible model-selection baseline
 
