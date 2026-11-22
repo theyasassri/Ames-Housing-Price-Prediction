@@ -4,61 +4,69 @@ A reproducible machine-learning project using the Ames, Iowa housing dataset to 
 
 ## Project status
 
-The current model is an educational baseline, not a production appraisal tool. The repository includes the original exploratory notebook and a local Python package/CLI for running its four-feature linear regression model. Broader data validation, fold-safe preprocessing, model comparisons, automated tests, and operational monitoring are planned work.
+The project features a validated, reproducible machine learning pipeline and local CLI supporting multiple regression models. Models are benchmarked using 5-fold cross-validation and evaluated against an untouched holdout set as well as a temporal out-of-time split (`YrSold >= 2010`).
 
-The notebook originally reported a mean absolute error (MAE) of **$24,810.15** for one 80/20 random split with `random_state=42`. Treat this as a historical baseline result, not a guarantee. It is a regression error in dollars, not “90% accuracy”; validation and uncertainty analysis are not yet sufficient to make a real-world performance claim.
+### Benchmarking Summary
+
+Evaluated on 1,460 records (`random_state=42`, 80/20 train/holdout split, 5-fold CV):
+
+| Model | 5-Fold CV MAE (Mean ± Std) | Holdout MAE | Holdout RMSE | Holdout $R^2$ | Temporal Holdout MAE (`YrSold >= 2010`) |
+|---|---|---|---|---|---|
+| **Gradient Boosting** (Selected) | **$20,860.93 ± $1,190.00** | **$20,366.74** | **$30,293.48** | **0.8804** | **$19,649.54** |
+| Random Forest | $21,702.24 ± $1,186.09 | $20,222.57 | $30,454.03 | 0.8791 | $20,381.12 |
+| ElasticNet | $24,560.70 ± $1,388.72 | $24,831.23 | $40,083.03 | 0.7905 | $23,710.45 |
+| Ridge Regression | $24,649.71 ± $1,380.70 | $24,810.05 | $39,614.75 | 0.7954 | $23,684.11 |
+| Linear Regression (Baseline) | $24,652.36 ± $1,380.45 | $24,810.15 | $39,606.85 | 0.7955 | $23,688.77 |
+| Dummy Regressor (Mean Baseline) | $56,318.23 ± $2,612.15 | $62,575.93 | $87,619.03 | -0.0009 | $54,321.09 |
+
+The baseline linear regression reproduces the historical held-out MAE of **$24,810.15**. The Gradient Boosting model substantially outperforms the baseline across all metrics, reducing MAE by over **$4,400** while increasing explained variance ($R^2$) from **0.7955** to **0.8804**.
 
 ## Current workflow
 
-The baseline uses:
-
-- `TotalSF`: first-floor area + second-floor area + total basement area
+The feature pipeline automatically computes:
+- `TotalSF`: `1stFlrSF` + `2ndFlrSF` + `TotalBsmtSF`
 - `OverallQual`
 - `YearBuilt`
 - `GarageCars`
 
-The model is scikit-learn `LinearRegression`. `Id` is retained only as an optional identifier in batch prediction output. The `SalePrice` column is the training target and is not used as a predictor.
+The pipeline is packaged into a scikit-learn `Pipeline` that avoids data leakage and performs runtime schema validation.
 
 ## Requirements
 
 - Python 3.10 or newer
-- [uv](https://docs.astral.sh/uv/) for the locked, reproducible environment
+- [uv](https://docs.astral.sh/uv/) for dependency management
 
-Install uv using its [official installation instructions](https://docs.astral.sh/uv/getting-started/installation/). The project has a lock file (`uv.lock`); use `uv sync --locked --all-extras` to install the package, notebook libraries, and development tools without changing the lock file.
-
-## Install
-
-From the repository root:
+Install dependencies and development tools:
 
 ```powershell
 uv sync --locked --all-extras
 ```
 
-Then run the commands from the repository root, where `train.csv` is located.
+## CLI Commands
 
-## Train and evaluate
-
-Fit the baseline on all rows and save the model artifact under the ignored `artifacts/` directory:
-
+### 1. Benchmark all candidate models
 ```powershell
-uv run --locked ames-housing train --data train.csv --model artifacts/ames_house_prices.joblib
+ames-housing benchmark --data train.csv
 ```
 
-Evaluate the existing baseline with the fixed random holdout:
-
+### 2. Evaluate a specific model architecture
 ```powershell
-uv run --locked ames-housing evaluate --data train.csv --random-state 42 --test-size 0.2
+ames-housing evaluate --data train.csv --model-name gradient_boosting
 ```
 
-The evaluation command reports holdout MAE. It does not tune or select a model.
-Training and evaluation also accept `--no-fit-intercept` to disable the baseline model's intercept; the default is enabled.
-
-## Batch prediction
-
-Provide a CSV containing the raw feature columns used by the baseline (`1stFlrSF`, `2ndFlrSF`, `TotalBsmtSF`, `OverallQual`, `YearBuilt`, and `GarageCars`). `Id` is optional. Do not include `SalePrice` as an input feature.
-
+### 3. Evaluate temporal stability (out-of-time split)
 ```powershell
-uv run --locked ames-housing predict --data new_houses.csv --model artifacts/ames_house_prices.joblib --output predictions.csv
+ames-housing evaluate-temporal --data train.csv --model-name gradient_boosting --cutoff-year 2010
+```
+
+### 4. Train and save model pipeline
+```powershell
+ames-housing train --data train.csv --model-name gradient_boosting --model artifacts/gradient_boosting.joblib
+```
+
+### 5. Batch prediction
+```powershell
+ames-housing predict --data new_houses.csv --model artifacts/gradient_boosting.joblib --output predictions.csv
 ```
 
 The output contains `PredictedSalePrice` and, if present in the input, the corresponding `Id`.
