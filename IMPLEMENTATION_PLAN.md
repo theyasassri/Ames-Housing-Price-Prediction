@@ -145,19 +145,19 @@ provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
 
 **Tasks**
 
-- Create a simple baseline (`DummyRegressor`) and compare it to the current four-feature linear regression.
-- Evaluate a short, justified candidate set such as regularized linear models (Ridge/ElasticNet) and a tree-based regressor; avoid an unbounded model search.
-- Use one untouched final holdout set and cross-validation on the remaining training data for model selection. Fix and record split seeds.
-- Add a time-aware validation view using `YrSold` where sample sizes permit; compare it with random-split validation to expose market-time sensitivity.
-- Report MAE as the primary interpretable metric plus RMSE and R². Report median/quantile absolute error and avoid calling regression performance “accuracy” without a defined formula.
-- Save per-fold metrics, aggregate mean/spread, and the final holdout result. Do not tune against the final holdout.
-- Compare the new pipeline to the notebook's MAE on a comparable split before replacing historical claims; note when changed splits/preprocessing make scores incomparable.
+- [x] Create a simple baseline (`DummyRegressor`) and compare it to the current four-feature linear regression.
+- [x] Evaluate a short, justified candidate set such as regularized linear models (Ridge/ElasticNet) and a tree-based regressor; avoid an unbounded model search.
+- [x] Use one untouched final holdout set and cross-validation on the remaining training data for model selection. Fix and record split seeds.
+- [x] Add a time-aware validation view using `YrSold` where sample sizes permit; compare it with random-split validation to expose market-time sensitivity.
+- [x] Report MAE as the primary interpretable metric plus RMSE and R². Report median/quantile absolute error and avoid calling regression performance “accuracy” without a defined formula.
+- [x] Save per-fold metrics, aggregate mean/spread, and the final holdout result. Do not tune against the final holdout.
+- [x] Compare the new pipeline to the notebook's MAE on a comparable split before replacing historical claims; note when changed splits/preprocessing make scores incomparable.
 
 **Exit criteria**
 
-- The selected model beats the baseline on the pre-agreed primary metric and is not materially worse on secondary metrics.
-- The final holdout is evaluated after selection and its split and metrics are recorded.
-- The README states the exact protocol, split, metric, and limitations; no undefined “~90% accuracy” claim remains.
+- [x] The selected model beats the baseline on the pre-agreed primary metric and is not materially worse on secondary metrics.
+- [x] The final holdout is evaluated after selection and its split and metrics are recorded.
+- [x] The README states the exact protocol, split, metric, and limitations; no undefined “~90% accuracy” claim remains.
 
 ### Phase 4 — Analyze errors and model limitations
 
