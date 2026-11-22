@@ -1,4 +1,4 @@
-"""Baseline model training and holdout evaluation."""
+"""Baseline model training, holdout evaluation, and pipeline serialization."""
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -6,27 +6,31 @@ from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
+from sklearn.base import BaseEstimator
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
 
 from ames_house_prices.config import (
     DEFAULT_RANDOM_STATE,
     DEFAULT_TEST_SIZE,
-    FEATURE_COLUMNS,
     TARGET_COLUMN,
 )
-from ames_house_prices.features import build_features
+from ames_house_prices.features import TotalSFTransformer, build_preprocessing_pipeline
+from ames_house_prices.validation import validate_prediction_data, validate_training_data
 
 
 @dataclass(frozen=True)
 class HoldoutEvaluation:
-    """Results from the project's existing deterministic random holdout."""
+    """Results from the project's deterministic random holdout."""
 
-    model: LinearRegression
+    model: BaseEstimator
     actual: pd.Series
     predictions: pd.Series
     mae: float
+    rmse: float
+    r2: float
 
     @property
     def results(self) -> pd.DataFrame:
@@ -40,23 +44,14 @@ class HoldoutEvaluation:
         )
 
 
-def _training_data(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
-    if TARGET_COLUMN not in frame.columns:
-        raise ValueError(f"Training data must include the target column {TARGET_COLUMN!r}.")
-
-    features = build_features(frame)
-    target = frame[TARGET_COLUMN]
-    if target.isna().any():
-        raise ValueError(f"Training target {TARGET_COLUMN!r} contains missing values.")
-    if not np.isfinite(target.to_numpy(dtype=float)).all():
-        raise ValueError(f"Training target {TARGET_COLUMN!r} contains non-finite values.")
-    if features.isna().any().any():
-        raise ValueError(
-            "Baseline model features contain missing values. "
-            "Missing-value preprocessing is planned for Phase 2."
-        )
-
-    return features.loc[:, list(FEATURE_COLUMNS)], target
+def build_model_pipeline(*, fit_intercept: bool = True, scale_features: bool = False) -> Pipeline:
+    """Create an end-to-end Pipeline that includes feature extraction and the estimator."""
+    preprocessor = build_preprocessing_pipeline(scale_features=scale_features)
+    estimator = LinearRegression(fit_intercept=fit_intercept)
+    return Pipeline([
+        ("preprocessor", preprocessor),
+        ("regressor", estimator),
+    ])
 
 
 def evaluate_holdout(
@@ -66,50 +61,73 @@ def evaluate_holdout(
     test_size: float = DEFAULT_TEST_SIZE,
     fit_intercept: bool = True,
 ) -> HoldoutEvaluation:
-    """Fit and evaluate the current linear regression on a deterministic holdout."""
-    features, target = _training_data(frame)
+    """Fit and evaluate the end-to-end pipeline on a deterministic holdout."""
+    validate_training_data(frame)
+
+    y = frame[TARGET_COLUMN]
+    X = frame.drop(columns=[TARGET_COLUMN])
+
     x_train, x_test, y_train, y_test = train_test_split(
-        features,
-        target,
+        X,
+        y,
         test_size=test_size,
         random_state=random_state,
     )
-    model = LinearRegression(fit_intercept=fit_intercept)
-    model.fit(x_train, y_train)
-    predictions = pd.Series(model.predict(x_test), index=y_test.index, name="Predicted($)")
+
+    pipeline = build_model_pipeline(fit_intercept=fit_intercept)
+    pipeline.fit(x_train, y_train)
+
+    preds = pipeline.predict(x_test)
+    predictions = pd.Series(preds, index=y_test.index, name="Predicted($)")
+
+    mae = float(mean_absolute_error(y_test, predictions))
+    rmse = float(np.sqrt(mean_squared_error(y_test, predictions)))
+    r2 = float(r2_score(y_test, predictions))
 
     return HoldoutEvaluation(
-        model=model,
+        model=pipeline,
         actual=y_test.rename("Actual($)"),
         predictions=predictions,
-        mae=float(mean_absolute_error(y_test, predictions)),
+        mae=mae,
+        rmse=rmse,
+        r2=r2,
     )
 
 
-def fit_model(frame: pd.DataFrame, *, fit_intercept: bool = True) -> LinearRegression:
-    """Fit the current baseline model on all supplied training rows."""
-    features, target = _training_data(frame)
-    model = LinearRegression(fit_intercept=fit_intercept)
-    model.fit(features, target)
-    return model
+def fit_model(frame: pd.DataFrame, *, fit_intercept: bool = True) -> Pipeline:
+    """Fit the end-to-end model pipeline on all supplied training rows."""
+    validate_training_data(frame)
+
+    y = frame[TARGET_COLUMN]
+    X = frame.drop(columns=[TARGET_COLUMN])
+
+    pipeline = build_model_pipeline(fit_intercept=fit_intercept)
+    pipeline.fit(X, y)
+    return pipeline
 
 
-def save_model(model: LinearRegression, path: str | Path) -> Path:
-    """Persist a model artifact to the requested local path."""
+def save_model(model: BaseEstimator, path: str | Path) -> Path:
+    """Persist a model pipeline artifact to the requested local path."""
     model_path = Path(path)
     model_path.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(model, model_path)
     return model_path
 
 
-def load_model(path: str | Path) -> LinearRegression:
-    """Load a locally generated model artifact."""
+def load_model(path: str | Path) -> BaseEstimator:
+    """Load a locally generated model artifact (Pipeline or BaseEstimator)."""
     model_path = Path(path)
     if not model_path.is_file():
         raise FileNotFoundError(f"Model artifact does not exist: {model_path}")
     return joblib.load(model_path)
 
 
-def predict(frame: pd.DataFrame, model: LinearRegression) -> np.ndarray:
-    """Predict prices for rows using the shared baseline feature preparation."""
-    return model.predict(build_features(frame))
+def predict(frame: pd.DataFrame, model: BaseEstimator) -> np.ndarray:
+    """Validate prediction data and predict prices using the trained pipeline or model."""
+    validate_prediction_data(frame)
+    if isinstance(model, Pipeline):
+        return model.predict(frame)
+    # Support backward compatibility if a raw LinearRegression was loaded
+    transformer = TotalSFTransformer()
+    features = transformer.transform(frame)
+    return model.predict(features)
