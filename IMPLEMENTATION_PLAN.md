@@ -1,3 +1,4 @@
+
 # Industrialization Implementation Plan
 
 ## 1. Current project assessment
@@ -180,18 +181,18 @@ provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
 
 **Tasks**
 
-- Provide CLI commands such as `ames-housing train`, `ames-housing evaluate`, and `ames-housing predict`.
-- Persist the complete preprocessing-plus-estimator pipeline, not only the final estimator.
-- Store a versioned artifact manifest containing model version, training timestamp, source data fingerprint, feature list, Python/library versions, configuration, split protocol, and evaluation metrics.
-- Implement prediction input validation and clear, row-specific error reporting; return predictions with a stable output schema and preserve a supplied record ID only as output metadata.
-- Make training and prediction paths/configuration explicit; ensure no data or artifact is overwritten without a deliberate output path.
-- Version model artifacts separately from source code. Avoid checking large generated model binaries into Git.
+- [x] Provide CLI commands such as `ames-housing train`, `ames-housing evaluate`, and `ames-housing predict`.
+- [x] Persist the complete preprocessing-plus-estimator pipeline, not only the final estimator.
+- [x] Store a versioned artifact manifest containing model version, training timestamp, source data fingerprint, feature list, Python/library versions, configuration, split protocol, and evaluation metrics.
+- [x] Implement prediction input validation and clear, row-specific error reporting; return predictions with a stable output schema and preserve a supplied record ID only as output metadata.
+- [x] Make training and prediction paths/configuration explicit; ensure no data or artifact is overwritten without a deliberate output path.
+- [x] Version model artifacts separately from source code. Avoid checking large generated model binaries into Git.
 
 **Exit criteria**
 
-- A model trained from a clean checkout can be loaded in a new process and score a batch of valid unseen records.
-- Invalid and partially missing inputs produce documented behavior or explicit errors.
-- The artifact manifest identifies the code, data, configuration, and environment used to produce the model.
+- [x] A model trained from a clean checkout can be loaded in a new process and score a batch of valid unseen records.
+- [x] Invalid and partially missing inputs produce documented behavior or explicit errors.
+- [x] The artifact manifest identifies the code, data, configuration, and environment used to produce the model.
 
 ### Phase 6 — Automated quality gates and CI
 
