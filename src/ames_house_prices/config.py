@@ -15,6 +15,7 @@ RAW_FEATURE_COLUMNS = (
 )
 DEFAULT_DATA_PATH = Path("train.csv")
 DEFAULT_MODEL_PATH = Path("artifacts/ames_house_prices.joblib")
+DEFAULT_MANIFEST_PATH = Path("artifacts/manifest.json")
 DEFAULT_RANDOM_STATE = 42
 DEFAULT_TEST_SIZE = 0.2
 DEFAULT_CV_SPLITS = 5
@@ -29,10 +30,11 @@ class RunConfig:
 
     data_path: Path = DEFAULT_DATA_PATH
     model_path: Path = DEFAULT_MODEL_PATH
+    manifest_path: Path = DEFAULT_MANIFEST_PATH
     output_path: Path = Path("predictions.csv")
     random_state: int = DEFAULT_RANDOM_STATE
     test_size: float = DEFAULT_TEST_SIZE
     fit_intercept: bool = True
-    model_name: str = "linear"
+    model_name: str = "gradient_boosting"
     cv_splits: int = DEFAULT_CV_SPLITS
     temporal_cutoff_year: int = DEFAULT_TEMPORAL_CUTOFF_YEAR

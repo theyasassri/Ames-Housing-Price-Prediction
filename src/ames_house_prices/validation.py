@@ -59,17 +59,23 @@ def validate_training_data(frame: pd.DataFrame) -> None:
     if (target_numeric <= 0).any():
         raise DataValidationError(f"Target '{TARGET_COLUMN}' contains non-positive values (<= 0).")
 
-    # Validate required raw features
+    # Validate required raw features with row-specific index tracking
     for col in RAW_FEATURE_COLUMNS:
         series = frame[col]
-        if series.isna().any():
-            raise DataValidationError(f"Feature column '{col}' contains missing values.")
+        null_indices = series[series.isna()].index.tolist()
+        if null_indices:
+            raise DataValidationError(
+                f"Feature column '{col}' contains missing values at row indices: {null_indices[:10]}"
+            )
         try:
             numeric_series = pd.to_numeric(series, errors="raise")
         except Exception as exc:
             raise DataValidationError(f"Feature column '{col}' must be numeric: {exc}") from exc
-        if not np.isfinite(numeric_series.to_numpy(dtype=float)).all():
-            raise DataValidationError(f"Feature column '{col}' contains non-finite values.")
+        non_finite_indices = numeric_series[~np.isfinite(numeric_series.to_numpy(dtype=float))].index.tolist()
+        if non_finite_indices:
+            raise DataValidationError(
+                f"Feature column '{col}' contains non-finite values at row indices: {non_finite_indices[:10]}"
+            )
 
 
 def validate_prediction_data(frame: pd.DataFrame) -> None:
@@ -80,7 +86,7 @@ def validate_prediction_data(frame: pd.DataFrame) -> None:
     - Explicit rejection of target column 'SalePrice' to prevent leakage
     - No duplicate column names
     - Presence of raw feature columns
-    - Feature integrity: numeric data types, non-null, and finite values
+    - Feature integrity: numeric data types, non-null, and finite values with row-specific indices
     """
     if frame.empty:
         raise DataValidationError("Prediction data contains no rows.")
@@ -103,14 +109,20 @@ def validate_prediction_data(frame: pd.DataFrame) -> None:
 
     for col in RAW_FEATURE_COLUMNS:
         series = frame[col]
-        if series.isna().any():
-            raise DataValidationError(f"Feature column '{col}' contains missing values.")
+        null_indices = series[series.isna()].index.tolist()
+        if null_indices:
+            raise DataValidationError(
+                f"Feature column '{col}' contains missing values at row indices: {null_indices[:10]}"
+            )
         try:
             numeric_series = pd.to_numeric(series, errors="raise")
         except Exception as exc:
             raise DataValidationError(f"Feature column '{col}' must be numeric: {exc}") from exc
-        if not np.isfinite(numeric_series.to_numpy(dtype=float)).all():
-            raise DataValidationError(f"Feature column '{col}' contains non-finite values.")
+        non_finite_indices = numeric_series[~np.isfinite(numeric_series.to_numpy(dtype=float))].index.tolist()
+        if non_finite_indices:
+            raise DataValidationError(
+                f"Feature column '{col}' contains non-finite values at row indices: {non_finite_indices[:10]}"
+            )
 
 
 def generate_data_audit(frame: pd.DataFrame) -> dict[str, Any]:

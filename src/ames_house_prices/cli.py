@@ -9,6 +9,7 @@ from ames_house_prices.analysis import run_error_analysis
 from ames_house_prices.config import (
     DEFAULT_CV_SPLITS,
     DEFAULT_DATA_PATH,
+    DEFAULT_MANIFEST_PATH,
     DEFAULT_MODEL_PATH,
     DEFAULT_RANDOM_STATE,
     DEFAULT_TEMPORAL_CUTOFF_YEAR,
@@ -18,6 +19,7 @@ from ames_house_prices.config import (
     RunConfig,
 )
 from ames_house_prices.data import load_training_data
+from ames_house_prices.manifest import ArtifactManifest, create_artifact_manifest
 from ames_house_prices.modeling import (
     benchmark_models,
     evaluate_holdout,
@@ -37,13 +39,14 @@ def _parser() -> argparse.ArgumentParser:
     )
     commands = parser.add_subparsers(dest="command", required=True)
 
-    train = commands.add_parser("train", help="Fit the model pipeline and save it.")
+    train = commands.add_parser("train", help="Fit the model pipeline, save it, and generate manifest.")
     train.add_argument("--data", type=Path, default=DEFAULT_DATA_PATH)
     train.add_argument("--model", type=Path, default=DEFAULT_MODEL_PATH)
+    train.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST_PATH)
     train.add_argument(
         "--model-name",
         type=str,
-        default="linear",
+        default="gradient_boosting",
         choices=SUPPORTED_MODELS,
         help="Model architecture to train.",
     )
@@ -114,6 +117,9 @@ def _parser() -> argparse.ArgumentParser:
     audit_cmd = commands.add_parser("audit", help="Audit dataset schema, missingness, and statistics.")
     audit_cmd.add_argument("--data", type=Path, default=DEFAULT_DATA_PATH)
 
+    inspect_manifest_cmd = commands.add_parser("inspect-manifest", help="View artifact lineage manifest.")
+    inspect_manifest_cmd.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST_PATH)
+
     prediction = commands.add_parser("predict", help="Write predictions for an input CSV.")
     prediction.add_argument("--data", type=Path, required=True)
     prediction.add_argument("--model", type=Path, default=DEFAULT_MODEL_PATH)
@@ -139,6 +145,23 @@ def main() -> None:
         if "target_summary" in audit_res:
             ts = audit_res["target_summary"]
             print(f"  Target summary: min=${ts['min']:,.0f}, median=${ts['50%']:,.0f}, max=${ts['max']:,.0f}")
+        return
+
+    if args.command == "inspect-manifest":
+        manifest = ArtifactManifest.load(args.manifest)
+        print(f"=== Artifact Lineage Manifest ({manifest.manifest_version}) ===")
+        print(f"Model Name:        {manifest.model_name}")
+        print(f"Artifact File:     {manifest.artifact_filename} (SHA256: {manifest.artifact_sha256[:12]}...)")
+        print(f"Timestamp (UTC):   {manifest.training_timestamp_utc}")
+        print(f"Git Commit SHA:    {manifest.git_commit_sha}")
+        print(f"Training Dataset:  {manifest.data_path} (SHA256: {manifest.data_sha256[:12]}...)")
+        print(f"Training Rows:     {manifest.training_rows}")
+        print(f"Target Column:     {manifest.target_column}")
+        print(f"Raw Features:      {', '.join(manifest.raw_feature_columns)}")
+        print(f"Derived Features:  {', '.join(manifest.derived_feature_columns)}")
+        print("Evaluation Metrics:")
+        for k, v in manifest.evaluation_metrics.items():
+            print(f"  {k}: {v:,.2f}" if isinstance(v, float) and "R2" not in k else f"  {k}: {v:.4f}")
         return
 
     if args.command == "benchmark":
@@ -177,17 +200,34 @@ def main() -> None:
         config = RunConfig(
             data_path=args.data,
             model_path=args.model,
+            manifest_path=args.manifest,
             fit_intercept=args.fit_intercept,
             model_name=args.model_name,
         )
         training_data = load_training_data(config.data_path)
+        eval_result = evaluate_holdout(
+            training_data,
+            model_name=config.model_name,
+            fit_intercept=config.fit_intercept,
+        )
         pipeline = fit_model(
             training_data,
             model_name=config.model_name,
             fit_intercept=config.fit_intercept,
         )
         model_path = save_model(pipeline, config.model_path)
-        print(f"Trained [{config.model_name}] on {len(training_data)} rows; model pipeline saved to {model_path}")
+        manifest = create_artifact_manifest(
+            model_name=config.model_name,
+            artifact_path=model_path,
+            data_path=config.data_path,
+            training_rows=len(training_data),
+            metrics=eval_result.metrics.to_dict(),
+        )
+        manifest_path = manifest.save(config.manifest_path)
+        print(f"Trained [{config.model_name}] on {len(training_data)} rows.")
+        print(f"  Model artifact saved to:   {model_path}")
+        print(f"  Lineage manifest saved to: {manifest_path}")
+        print(f"  Holdout MAE: ${eval_result.mae:,.2f} | RMSE: ${eval_result.rmse:,.2f} | R²: {eval_result.r2:.4f}")
         return
 
     if args.command == "evaluate":
