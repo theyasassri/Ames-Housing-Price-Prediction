@@ -198,19 +198,19 @@ provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
 
 **Tasks**
 
-- Add unit tests for schema checks, missing-value semantics, feature engineering, target/ID exclusion, and prediction output.
-- Add integration tests for train-save-load-predict and CLI behavior using small synthetic fixtures.
-- Add a data contract test against the checked-in dataset, including expected schema and documented row-count policy.
-- Add deterministic tests for fixed seeds; avoid asserting one exact score when a range or invariant is more robust.
-- Configure formatting, linting, static typing where practical, and test coverage reporting.
-- Add CI to install the locked environment and run tests, lint, and type checks on pull requests.
-- Add dependency vulnerability scanning and an update cadence; keep data/model tests separate from external network dependencies.
+- [x] Add unit tests for schema checks, missing-value semantics, feature engineering, target/ID exclusion, and prediction output.
+- [x] Add integration tests for train-save-load-predict and CLI behavior using small synthetic fixtures.
+- [x] Add a data contract test against the checked-in dataset, including expected schema and documented row-count policy.
+- [x] Add deterministic tests for fixed seeds; avoid asserting one exact score when a range or invariant is more robust.
+- [x] Configure formatting, linting, static typing where practical, and test coverage reporting.
+- [x] Add CI to install the locked environment and run tests, lint, and type checks on pull requests.
+- [x] Add dependency vulnerability scanning and an update cadence; keep data/model tests separate from external network dependencies.
 
 **Exit criteria**
 
-- CI is green from a clean checkout and blocks merges on failed tests or static checks.
-- The core train/predict path has unit and integration coverage.
-- Test reports and dependency scan results are available for every main-branch change.
+- [x] CI is green from a clean checkout and blocks merges on failed tests or static checks.
+- [x] The core train/predict path has unit and integration coverage.
+- [x] Test reports and dependency scan results are available for every main-branch change.
 
 ### Phase 7 — Release, monitoring, and controlled retraining
 
