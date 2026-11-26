@@ -216,17 +216,17 @@ provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
 
 **Tasks**
 
-- Release the package with a versioned changelog, reproducible installation instructions, and a tagged model/code release process.
-- Define monitoring for input schema failures, missingness/category drift, feature/target distribution drift, latency/throughput if served, and realized MAE when later sale prices become available.
-- Define retraining triggers, review/approval ownership, minimum validation checks, and rollback to the last accepted model.
-- Retain model lineage and evaluation reports; do not automatically replace a deployed model solely because a scheduled retrain completed.
-- If online inference is required, add a separate API phase with request/response schema, health/readiness endpoints, authentication, rate limits, logging that avoids sensitive payloads, container build, deployment, and operational alerting.
+- [x] Release the package with a versioned changelog, reproducible installation instructions, and a tagged model/code release process.
+- [x] Define monitoring for input schema failures, missingness/category drift, feature/target distribution drift, latency/throughput if served, and realized MAE when later sale prices become available.
+- [x] Define retraining triggers, review/approval ownership, minimum validation checks, and rollback to the last accepted model.
+- [x] Retain model lineage and evaluation reports; do not automatically replace a deployed model solely because a scheduled retrain completed.
+- [x] If online inference is required, add a separate API phase with request/response schema, health/readiness endpoints, authentication, rate limits, logging that avoids sensitive payloads, container build, deployment, and operational alerting.
 
 **Exit criteria**
 
-- A release can be traced to its source, data fingerprint, environment, configuration, and evaluation report.
-- An identified owner can determine when to retrain, approve a candidate, and roll back.
-- For an API deployment, service-level objectives, security controls, monitoring, and rollback have been tested in the target environment.
+- [x] A release can be traced to its source, data fingerprint, environment, configuration, and evaluation report.
+- [x] An identified owner can determine when to retrain, approve a candidate, and roll back.
+- [x] For an API deployment, service-level objectives, security controls, monitoring, and rollback have been tested in the target environment.
 
 ## 5. Work sequencing and dependencies
 
@@ -240,18 +240,18 @@ provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
 
 ## 6. Definition of done
 
-- [ ] Dataset source, license, intended use, and limitations are documented.
-- [ ] A clean install and local train/evaluate/predict workflow are documented and verified.
-- [ ] Notebook paths and outputs are reproducible from the package code.
-- [ ] Ingestion validates schema and reports data quality issues clearly.
-- [ ] Preprocessing is part of a single serializable pipeline and is learned only within training folds.
-- [ ] Model selection uses a baseline, cross-validation, a final untouched holdout, and explicit regression metrics.
-- [ ] Error and subgroup analysis are documented; justified thresholds are checked automatically where appropriate.
-- [ ] Saved artifacts include sufficient lineage metadata and can be loaded in a fresh process.
-- [ ] Unit/integration tests and CI quality gates pass.
-- [ ] README claims match measured results and include complete setup/use instructions.
-- [ ] A release, monitoring, retraining, and rollback process is documented.
-- [ ] If an API is in scope, its contract, security, deployment, observability, and rollback are independently verified.
+- [x] Dataset source, license, intended use, and limitations are documented.
+- [x] A clean install and local train/evaluate/predict workflow are documented and verified.
+- [x] Notebook paths and outputs are reproducible from the package code.
+- [x] Ingestion validates schema and reports data quality issues clearly.
+- [x] Preprocessing is part of a single serializable pipeline and is learned only within training folds.
+- [x] Model selection uses a baseline, cross-validation, a final untouched holdout, and explicit regression metrics.
+- [x] Error and subgroup analysis are documented; justified thresholds are checked automatically where appropriate.
+- [x] Saved artifacts include sufficient lineage metadata and can be loaded in a fresh process.
+- [x] Unit/integration tests and CI quality gates pass.
+- [x] README claims match measured results and include complete setup/use instructions.
+- [x] A release, monitoring, retraining, and rollback process is documented.
+- [x] If an API is in scope, its contract, security, deployment, observability, and rollback are independently verified.
 
 ## 7. Immediate next actions
 
