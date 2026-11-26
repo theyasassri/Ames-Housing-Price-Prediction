@@ -228,6 +228,27 @@ provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
 - [x] An identified owner can determine when to retrain, approve a candidate, and roll back.
 - [x] For an API deployment, service-level objectives, security controls, monitoring, and rollback have been tested in the target environment.
 
+### Phase 8 — Production Web Serving & User Interface (Backend & Frontend)
+
+To make the system directly usable by non-technical stakeholders without running command-line workflows, implement a decoupled client-server architecture:
+
+#### Backend (FastAPI REST Service)
+- [ ] Build a robust, non-hardcoded FastAPI application in `src/ames_house_prices/api.py`.
+- [ ] Implement strongly-typed Pydantic schemas for single-house inputs and batch CSV payloads with explicit validation bounds (no silent defaults or arbitrary biases).
+- [ ] Expose endpoints:
+  - `GET /health` and `GET /api/v1/metadata` (serving active model lineage and training manifest).
+  - `POST /api/v1/predict` (single property valuation with validated schema).
+  - `POST /api/v1/predict-batch` (CSV upload endpoint with row-level error reporting).
+- [ ] Integrate CORS middleware allowing configurable frontend origins.
+- [ ] Add integration and contract tests for the API in `tests/test_api.py`.
+
+#### Frontend (React / Vite + Tailwind CSS)
+- [ ] Scaffold a modern React application in `frontend/` powered by Vite and Tailwind CSS.
+- [ ] Build an interactive property estimator with real-time feedback, sliders, and numerical inputs.
+- [ ] Build a CSV drag-and-drop batch prediction tool with table preview and instant CSV export.
+- [ ] Present transparent model documentation (MAE, $R^2$, features used, and fair-lending limitations) directly within the UI.
+- [ ] Provide unified launch and build commands for seamless developer onboarding.
+
 ## 5. Work sequencing and dependencies
 
 1. Phase 0 decisions precede data redistribution and public release.
@@ -236,7 +257,7 @@ provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
 4. Phase 3 model selection produces the candidate evaluated in Phase 4.
 5. Phase 5 packages the selected pipeline; Phase 6 tests package behavior and CLI workflows.
 6. Phase 7 release controls depend on artifact/version metadata from Phase 5 and automated checks from Phase 6.
-7. The API portion of Phase 7 is optional and should be scheduled only after an online consumer is identified.
+7. Phase 8 develops the FastAPI REST backend and React frontend interface.
 
 ## 6. Definition of done
 
@@ -251,7 +272,8 @@ provenance has been verified as Dean De Cock's Ames Housing dataset via Kaggle's
 - [x] Unit/integration tests and CI quality gates pass.
 - [x] README claims match measured results and include complete setup/use instructions.
 - [x] A release, monitoring, retraining, and rollback process is documented.
-- [x] If an API is in scope, its contract, security, deployment, observability, and rollback are independently verified.
+- [ ] Production FastAPI backend is verified with unit and integration tests.
+- [ ] Modern React frontend provides interactive valuation and batch CSV prediction.
 
 ## 7. Immediate next actions
 

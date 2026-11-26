@@ -9,9 +9,12 @@ description = "Reproducible Ames Housing price modeling project"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "fastapi>=0.115,<1",
     "joblib>=1.4,<2",
     "pandas>=2.2,<4",
+    "python-multipart>=0.0.18",
     "scikit-learn>=1.5,<2",
+    "uvicorn[standard]>=0.32,<1",
 ]
 
 [project.optional-dependencies]
@@ -37,3 +40,8 @@ target-version = "py310"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28,<1",
+]
